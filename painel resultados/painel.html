@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Pesquisa de Satisfação</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Adicione estilos personalizados se necessário */
+        .card {
+            background-color: white;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-xl */
+            padding: 1.5rem; /* p-6 */
+        }
+        .text-gradient {
+            background-image: linear-gradient(to right, var(--tw-gradient-stops));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .text-red-gradient {
+            --tw-gradient-stops: var(--tw-gradient-from, #dc2626), var(--tw-gradient-to, #000000); /* from-red-600 to-black */
+        }
+        /* Estilo para garantir que os canvas do gráfico tenham uma altura mínima */
+        .chart-container {
+            position: relative; /* Necessário para o responsive do Chart.js */
+            height: 300px; /* Defina uma altura para os gráficos */
+            width: 100%; /* Ocupa a largura total do container pai */
+        }
+        /* Para garantir que o canvas se ajuste ao container */
+        canvas {
+            display: block; /* Evita espaçamentos indesejados */
+            width: 80   % !important; /* Tailwind pode ser rígido, !important garante */
+            height: 12 0% !important; /* Tailwind pode ser rígido, !important garante */
+        }
+
+        /* ESTILO CRÍTICO PARA A BARRA DE ROLAGEM DA TABELA */
+        .scrollable-table-container {
+            max-height: 320px; /* Esta altura é que limita o espaço VISÍVEL. Ajuste para que caibam ~5 linhas + cabeçalho */
+            overflow-y: auto; /* Adiciona barra de rolagem vertical quando o conteúdo excede max-height */
+        }
+        /* Estilo para a barra de rolagem customizada (opcional, para browsers que suportam) */
+        /* Para navegadores Webkit (Chrome, Safari, Edge) */
+        .scrollable-table-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px; /* Para scroll horizontal */
+        }
+        .scrollable-table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .scrollable-table-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        .scrollable-table-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-6 font-sans">
+    <div class="max-w-7xl mx-auto">
+        <header class="bg-gradient-to-r from-red-600 to-black p-6 rounded-xl shadow-xl text-white mb-8 flex items-center justify-between">
+            <div class="flex items-center">
+                <img src="logo maquisul pequena.png" class="w-24 h-16 mr-4" alt="Logo Maquisul">
+                <div>
+                    <h1 class="text-3xl font-bold">Dashboard de Satisfação</h1>
+                    <p class="text-red-100">Visão geral das respostas da pesquisa</p>
+                </div>
+            </div>
+            <div class="flex space-x-4">
+                <button id="refreshDataBtn" class="bg-white text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
+                    <i class="fas fa-sync-alt mr-2"></i> Atualizar Dados
+                </button>
+                <button id="exportExcelBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                    <i class="fas fa-file-excel mr-2"></i> Exportar para Excel
+                </button>
+            </div>
+        </header>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">Total de Respostas</h3>
+                <p id="totalRespostas" class="text-4xl font-bold text-red-600">0</p>
+            </div>
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">Média Atendimento Geral</h3>
+                <p id="mediaAtendimento" class="text-4xl font-bold text-gradient text-red-gradient">0.0</p>
+            </div>
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">Avaliações Negativas (&lt;= 3)</h3>
+                <p id="avaliacoesNegativas" class="text-4xl font-bold text-red-600">0</p>
+            </div>
+        </section>
+
+        <section class="card mb-8">
+            <h3 class="text-xl font-semibold text-gray-700 mb-4">Filtros</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label for="filtroMotivo" class="block text-sm font-medium text-gray-700">Motivo Contato</label>
+                    <select id="filtroMotivo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50">
+                        <option value="">Todos</option>
+                        <option value="compra_pj">Compra - PJ</option>
+                        <option value="compra_pf">Compra - PF</option>
+                        <option value="suporte">Suporte Técnico</option>
+                        <option value="reclamacao">Reclamação</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="dataInicio" class="block text-sm font-medium text-gray-700">Data Início</label>
+                    <input type="date" id="dataInicio" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50">
+                </div>
+                <div>
+                    <label for="dataFim" class="block text-sm font-medium text-gray-700">Data Fim</label>
+                    <input type="date" id="dataFim" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50">
+                </div>
+                <div class="flex items-end">
+                    <button id="applyFiltersBtn" class="w-full bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors">
+                        Aplicar Filtros
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="card overflow-x-auto mb-8 scrollable-table-container">
+            <h3 class="text-xl font-semibold text-gray-700 mb-4">Últimas Respostas</h3>
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50 sticky top-0 z-10"> <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Motivo Contato</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Atendimento Geral</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comentário Atendimento</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Atendimento Caixa</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comentário Caixa</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entrega</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comentário Entrega</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sugestão</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefone</th>
+                    </tr>
+                </thead>
+                <tbody id="respostasTabelaBody" class="bg-white divide-y divide-gray-200">
+                    <tr><td colspan="12" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">Carregando dados...</td></tr>
+                </tbody>
+            </table>
+            <div id="noDataMessage" class="hidden text-center text-gray-500 py-4">Nenhum dado encontrado para os filtros aplicados.</div>
+        </section>
+        
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-700 mb-4">Atendimento Geral</h3>
+                <div class="chart-container">
+                    <canvas id="atendimentoGeralChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-700 mb-4">Motivos de Contato</h3>
+                <div class="chart-container">
+                    <canvas id="motivosContatoChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-700 mb-4">Atendimento Caixa</h3>
+                <div class="chart-container">
+                    <canvas id="atendimentoCaixaChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-700 mb-4">Momento da Entrega</h3>
+                <div class="chart-container">
+                    <canvas id="momentoEntregaChart"></canvas>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Constantes para elementos do DOM
+            const respostasTabelaBody = document.getElementById('respostasTabelaBody');
+            const totalRespostasEl = document.getElementById('totalRespostas');
+            const mediaAtendimentoEl = document.getElementById('mediaAtendimento');
+            const avaliacoesNegativasEl = document.getElementById('avaliacoesNegativas');
+            const refreshDataBtn = document.getElementById('refreshDataBtn');
+            const exportExcelBtn = document.getElementById('exportExcelBtn');
+            const filtroMotivoEl = document.getElementById('filtroMotivo');
+            const dataInicioEl = document.getElementById('dataInicio');
+            const dataFimEl = document.getElementById('dataFim');
+            const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+            const noDataMessage = document.getElementById('noDataMessage');
+
+            // Constantes para os elementos canvas dos gráficos
+            const atendimentoGeralChartCanvas = document.getElementById('atendimentoGeralChart');
+            const motivosContatoChartCanvas = document.getElementById('motivosContatoChart');
+            const atendimentoCaixaChartCanvas = document.getElementById('atendimentoCaixaChart');
+            const momentoEntregaChartCanvas = document.getElementById('momentoEntregaChart');
+
+            // Variáveis para armazenar as instâncias dos gráficos Chart.js
+            let atendimentoGeralChartInstance;
+            let motivosContatoChartInstance;
+            let atendimentoCaixaChartInstance;
+            let momentoEntregaChartInstance;
+
+            // URL da API do seu backend
+            const API_URL = 'http://192.168.1.210:3000/api/respostas';
+
+            // Variável para armazenar os dados atualmente exibidos (e filtrados) na tabela
+            let currentFilteredData = []; 
+
+            // --- Função assíncrona para buscar dados do backend ---
+            async function fetchData(filters = {}) {
+                respostasTabelaBody.innerHTML = '<tr><td colspan="12" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">Carregando dados...</td></tr>';
+                noDataMessage.classList.add('hidden');
+
+                let queryString = new URLSearchParams(filters).toString();
+                let url = `${API_URL}?${queryString}`; 
+
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    currentFilteredData = data; // Atualiza os dados filtrados
+                    renderData(currentFilteredData); // Renderiza a tabela e os cards
+                    renderCharts(currentFilteredData); // Renderiza os gráficos
+                } catch (error) {
+                    console.error("Erro ao buscar dados:", error);
+                    respostasTabelaBody.innerHTML = '<tr><td colspan="12" class="px-6 py-4 whitespace-nowrap text-center text-red-500">Erro ao carregar dados. Verifique o console.</td></tr>';
+                    totalRespostasEl.textContent = 'N/A';
+                    mediaAtendimentoEl.textContent = 'N/A';
+                    avaliacoesNegativasEl.textContent = 'N/A';
+                }
+            }
+
+            // --- Função para renderizar os dados na tabela e nos cards de métricas ---
+            function renderData(dataToRender) {
+                respostasTabelaBody.innerHTML = ''; // Limpa a tabela
+                noDataMessage.classList.add('hidden');
+
+                if (dataToRender.length === 0) {
+                    noDataMessage.classList.remove('hidden');
+                    totalRespostasEl.textContent = '0';
+                    mediaAtendimentoEl.textContent = '0.0';
+                    avaliacoesNegativasEl.textContent = '0';
+                    return;
+                }
+
+                // AQUI: Não usamos .slice(0, 5) para que todos os itens sejam inseridos no DOM e o CSS controle a rolagem.
+                // A linha 'const itemsToRender = dataToRender.slice(0, 5);' foi REMOVIDA.
+
+                dataToRender.forEach(resposta => { // Itera sobre TODOS os itens
+                    const row = respostasTabelaBody.insertRow();
+                    row.classList.add('hover:bg-gray-100');
+
+                    // Formatação da data para exibição
+                    const data = new Date(resposta.data_criacao || resposta.id);
+                    const formattedDate = data.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+
+                    // Inserção dos dados na linha da tabela
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formattedDate}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${resposta.motivo_contato || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${resposta.atendimento || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-normal text-sm text-gray-900 max-w-xs overflow-hidden text-ellipsis">${resposta.comentario_atendimento || '—'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${resposta.atendimento_caixa || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-normal text-sm text-gray-900 max-w-xs overflow-hidden text-ellipsis">${resposta.comentario_caixa || '—'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${resposta.entrega || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-normal text-sm text-gray-900 max-w-xs overflow-hidden text-ellipsis">${resposta.comentario_entrega || '—'}</td>
+                        <td class="px-6 py-4 whitespace-normal text-sm text-gray-900 max-w-xs overflow-hidden text-ellipsis">${resposta.sugestao || '—'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${resposta.nome || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${resposta.email || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${resposta.telefone || 'N/A'}</td>
+                    `;
+                });
+
+                // Os cálculos de totalRespostasEl, mediaAtendimentoEl, avaliacoesNegativasEl
+                // são feitos sobre TODOS os dados (dataToRender), o que é o comportamento correto.
+                let totalAtendimentoTodos = 0;
+                let negativasCountTodos = 0;
+
+                dataToRender.forEach(resposta => {
+                    const avaliacaoNum = parseInt(resposta.atendimento);
+                    if (!isNaN(avaliacaoNum)) {
+                        totalAtendimentoTodos += avaliacaoNum;
+                        if (avaliacaoNum <= 3) {
+                            negativasCountTodos++;
+                        }
+                    }
+                });
+
+                totalRespostasEl.textContent = dataToRender.length;
+                const media = dataToRender.length > 0 ? (totalAtendimentoTodos / dataToRender.length).toFixed(1) : '0.0';
+                mediaAtendimentoEl.textContent = media;
+                avaliacoesNegativasEl.textContent = negativasCountTodos;
+            }
+
+            // --- Função para renderizar os gráficos ---
+            // Função auxiliar para criar um gráfico de barras comum
+            function createBarChart(canvasElement, chartTitle, dataKey, dataToRender) {
+                // Destruir instância anterior
+                let chartInstance = Chart.getChart(canvasElement);
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+
+                const counts = { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 };
+                dataToRender.forEach(d => {
+                    const value = d && d[dataKey] !== undefined && d[dataKey] !== null ? String(d[dataKey]) : null;
+                    if (value !== null && counts.hasOwnProperty(value)) {
+                        counts[value]++;
+                    }
+                });
+
+                const labels = ['Péssimo (1)', 'Ruim (2)', 'Regular (3)', 'Bom (4)', 'Excelente (5)'];
+                const dataValues = [
+                    counts['1'], counts['2'], counts['3'], counts['4'], counts['5']
+                ];
+                const backgroundColors = [
+                    'rgba(220, 38, 38, 0.7)', // Vermelho para 1
+                    'rgba(251, 191, 36, 0.7)', // Amarelo para 2
+                    'rgba(107, 114, 128, 0.7)', // Cinza para 3
+                    'rgba(34, 197, 94, 0.7)', // Verde claro para 4
+                    'rgba(22, 163, 74, 0.7)'  // Verde escuro para 5
+                ];
+                const borderColors = [
+                    'rgba(220, 38, 38, 1)',
+                    'rgba(251, 191, 36, 1)',
+                    'rgba(107, 114, 128, 1)',
+                    'rgba(34, 197, 94, 1)',
+                    'rgba(22, 163, 74, 1)'
+                ];
+
+                return new Chart(canvasElement, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Número de Avaliações',
+                            data: dataValues,
+                            backgroundColor: backgroundColors,
+                            borderColor: borderColors,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        scales: {
+                            y: { beginAtZero: true, title: { display: true, text: 'Contagem' } },
+                            x: { title: { display: true, text: 'Nível de Avaliação' } }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            title: {
+                                display: false,
+                                text: chartTitle
+                            }
+                        }
+                    }
+                });
+            }
+
+            function renderCharts(dataToRender) {
+                // Destruir a instância do gráfico de pizza separadamente
+                if (motivosContatoChartInstance) {
+                    motivosContatoChartInstance.destroy();
+                }
+
+                // Chamar a função auxiliar para cada gráfico de barras de avaliação
+                atendimentoGeralChartInstance = createBarChart(atendimentoGeralChartCanvas, 'Distribuição de Avaliações Gerais', 'atendimento', dataToRender);
+                atendimentoCaixaChartInstance = createBarChart(atendimentoCaixaChartCanvas, 'Distribuição de Avaliações: Atendimento Caixa', 'atendimento_caixa', dataToRender);
+                momentoEntregaChartInstance = createBarChart(momentoEntregaChartCanvas, 'Distribuição de Avaliações: Momento da Entrega', 'entrega', dataToRender);
+
+                // Dados para o Gráfico de Pizza: Motivos de Contato
+                const motivosCounts = {};
+                dataToRender.forEach(d => {
+                    const motivo = d && d.motivo_contato ? d.motivo_contato : 'Não Informado';
+                    motivosCounts[motivo] = (motivosCounts[motivo] || 0) + 1;
+                });
+                const motivosLabels = Object.keys(motivosCounts);
+                const motivosData = Object.values(motivosCounts);
+                const backgroundColorsPie = [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9933', '#C70039', '#FFC300'
+                ];
+
+                motivosContatoChartInstance = new Chart(motivosContatoChartCanvas, {
+                    type: 'pie',
+                    data: {
+                        labels: motivosLabels,
+                        datasets: [{
+                            data: motivosData,
+                            backgroundColor: backgroundColorsPie.slice(0, motivosLabels.length),
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    font: {
+                                        size: 10
+                                    },
+                                    boxWidth: 15,
+                                    generateLabels: function(chart) {
+                                        const data = chart.data;
+                                        if (data.labels.length && data.datasets.length) {
+                                            return data.labels.map(function(label, i) {
+                                                const meta = chart.getDatasetMeta(0);
+                                                // Corrigir acesso a meta.data[i].options usando optional chaining
+                                                const dataPointOptions = meta.data[i]?.options;
+                                                const value = data.datasets[0].data[i];
+                                                const total = data.datasets[0].data.reduce((sum, val) => sum + val, 0);
+                                                const percentage = (total > 0 ? (value / total * 100) : 0).toFixed(1) + '%';
+                                                
+                                                let displayLabel = label;
+                                                const MAX_LABEL_LENGTH = 20;
+                                                if (displayLabel.length > MAX_LABEL_LENGTH) {
+                                                    displayLabel = displayLabel.substring(0, MAX_LABEL_LENGTH - 3) + '...';
+                                                }
+
+                                                return {
+                                                    text: `${displayLabel} (${percentage})`,
+                                                    // Usar dataPointOptions com fallback
+                                                    fillStyle: dataPointOptions?.backgroundColor || 'gray',
+                                                    strokeStyle: dataPointOptions?.borderColor || 'lightgray',
+                                                    lineWidth: dataPointOptions?.borderWidth || 1,
+                                                    hidden: isNaN(value) || value <= 0,
+                                                    index: i
+                                                };
+                                            });
+                                        }
+                                        return [];
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) { label += ': '; }
+                                        if (context.parsed !== null) {
+                                            const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                                            const percentage = (context.parsed / total * 100).toFixed(1) + '%';
+                                            label += context.parsed + ' (' + percentage + ')';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            },
+                            datalabels: {
+                                formatter: (value, context) => {
+                                    const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                                    const percentage = (value / total * 100).toFixed(1) + '%';
+                                    return percentage;
+                                },
+                                color: '#fff',
+                                font: { size: 10 },
+                                textShadowBlur: 4,
+                                textShadowColor: 'rgba(0, 0, 0, 0.5)',
+                                display: function(context) {
+                                    const dataset = context.dataset;
+                                    const total = dataset.data.reduce((sum, val) => sum + val, 0);
+                                    const value = dataset.data[context.dataIndex];
+                                    return (value / total * 100) > 5;
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // --- Função para aplicar todos os filtros (Motivo Contato, Data Início, Data Fim) ---
+            function applyAllFilters() {
+                const filters = {};
+                const motivoFiltro = filtroMotivoEl.value;
+                const dataInicio = dataInicioEl.value;
+                const dataFim = dataFimEl.value;
+
+                if (motivoFiltro) {
+                    filters.motivo_contato = motivoFiltro;
+                }
+                if (dataInicio) {
+                    filters.data_inicio = dataInicio;
+                }
+                if (dataFim) {
+                    filters.data_fim = dataFim;
+                }
+                fetchData(filters); // Chama fetchData com os filtros
+            }
+
+            // --- Função para exportar para Excel ---
+            function exportToExcel() {
+                if (currentFilteredData.length === 0) {
+                    alert('Não há dados para exportar!');
+                    return;
+                }
+
+                const worksheetData = [];
+
+                // Cabeçalhos (adaptados dos <th> da tabela)
+                const headers = [
+                    "Data", "Motivo Contato", "Atendimento Geral", "Comentário Atendimento",
+                    "Atendimento Caixa", "Comentário Caixa", "Entrega", "Comentário Entrega",
+                    "Sugestão", "Nome", "Email", "Telefone"
+                ];
+                worksheetData.push(headers);
+
+                // Dados das linhas
+                currentFilteredData.forEach(resposta => {
+                    const data = new Date(resposta.data_criacao || resposta.id);
+                    const formattedDate = data.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+
+                    worksheetData.push([
+                        formattedDate,
+                        resposta.motivo_contato || '',
+                        resposta.atendimento || '',
+                        resposta.comentario_atendimento || '',
+                        resposta.atendimento_caixa || '',
+                        resposta.comentario_caixa || '',
+                        resposta.entrega || '',
+                        resposta.comentario_entrega || '',
+                        resposta.sugestao || '', // Usando 'comentarios' conforme seu backend
+                        resposta.nome || '',
+                        resposta.email || '',
+                        resposta.telefone || ''
+                    ]);
+                });
+
+                // Cria o workbook e a worksheet
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet(worksheetData);
+                XLSX.utils.book_append_sheet(wb, ws, "Respostas Pesquisa");
+
+                // Gera o arquivo e faz o download
+                const filename = `respostas_pesquisa_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.xlsx`;
+                XLSX.writeFile(wb, filename);
+            }
+
+            // --- Event Listeners ---
+            refreshDataBtn.addEventListener('click', applyAllFilters);
+            applyFiltersBtn.addEventListener('click', applyAllFilters);
+            exportExcelBtn.addEventListener('click', exportToExcel);
+
+            // Carrega os dados na inicialização
+            fetchData();
+        });
+    </script>
+</body>
+</html>
