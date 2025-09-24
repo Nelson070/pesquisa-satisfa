@@ -7,15 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Existing styles remain the same */
         .hidden {
             display: none !important;
         }
         .active {
-            /* Estilo para o botão de avaliação ativo na pesquisa de satisfação */
-            /* Usar propriedades CSS diretas, pois @apply não funciona com CDN */
-            box-shadow: 0 0 0 2px rgb(255, 0, 0); /* ring-2 equivale a box-shadow */
-            border-color: rgb(248, 0, 0); /* border-blue-500 */
+            box-shadow: 0 0 0 2px rgb(255, 0, 0);
+            border-color: rgb(248, 0, 0);
         }
     </style>
 </head>
@@ -23,400 +20,388 @@
     <div class="w-full max-w-2xl bg-white rounded-xl shadow-xl overflow-hidden">
         <div class="bg-gradient-to-r from-red-600 to-black p-6 text-white">
             <div class="flex items-center mb-4">
-                <img src="Logo maquisul - contorno efeito (2).png" class="w-28 h-18" alt="Logo Maquisul">
+                <img src="Logo maquisul - contorno efeito (2).png" class="w-28 h-auto" alt="Logo Maquisul">
                 <div class="ml-4">
                     <h1 class="text-2xl font-bold">Pesquisa de Satisfação Maquisul</h1>
-                    <p class="text-red-100">Sua opinião é muito importante para nós!</p>
+                    <p class="text-red-100">A sua opinião é muito importante para nós!</p>
                 </div>
             </div>
             <div class="w-full bg-black/30 rounded-full h-1.5">
-                <div id="progress" class="bg-white progress-bar h-1.5 rounded-full" style="width: 0%"></div>
+                <div id="progress" class="bg-white h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
             </div>
         </div>
 
         <form id="surveyForm" class="p-6" novalidate>
+            <!-- ETAPA 1: Motivo do Contato -->
             <div id="step1" class="step">
                 <div class="mb-8">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-2">Qual foi o motivo do seu contato com a empresa?</h2>
+                    <h2 class="text-xl font-semibold text-gray-800 mb-2">Qual foi o motivo do seu contacto com a empresa?</h2>
                     <p class="text-gray-600 mb-4">Selecione 1 opção</p>
-
                     <div class="space-y-3">
-                        <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-red-50 cursor-pointer">
-                            <input type="radio" name="contact_reason" value="compra_pj" class="h-5 w-5 text-red-600 rounded border-gray-300 focus:ring-red-500" required>
-                            <span class="ml-3 text-gray-700">Compra - PJ</span>
-                        </label>
-                        <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-red-50 cursor-pointer">
-                            <input type="radio" name="contact_reason" value="compra_pf" class="h-5 w-5 text-red-600 rounded border-gray-300 focus:ring-red-500" required>
-                            <span class="ml-3 text-gray-700">Compra - PF</span>
-                        </label>
-                        <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-red-50 cursor-pointer">
-                            <input type="radio" name="contact_reason" value="suporte" class="h-5 w-5 text-red-600 rounded border-gray-300 focus:ring-red-500" required>
-                            <span class="ml-3 text-gray-700">Suporte Técnico</span>
-                        </label>
-                        <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-red-50 cursor-pointer">
-                            <input type="radio" name="contact_reason" value="reclamacao" class="h-5 w-5 text-red-600 rounded border-gray-300 focus:ring-red-500" required>
-                            <span class="ml-3 text-gray-700">Reclamação</span>
-                        </label>
-                        <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-red-50 cursor-pointer">
-                            <input type="radio" name="contact_reason" value="outro" class="h-5 w-5 text-red-600 rounded border-gray-300 focus:ring-red-500">
-                            <span class="ml-3 text-gray-700">Outro</span>
-                        </label>
-                        <input type="text" name="other_reason" placeholder="Especifique..." class="border border-gray-300 rounded-md p-2 mt-2 w-full" disabled>
+                        <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-red-50 cursor-pointer"><input type="radio" name="contact_reason" value="compra_pj" class="h-5 w-5 text-red-600" required><span class="ml-3 text-gray-700">Compra - PJ</span></label>
+                        <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-red-50 cursor-pointer"><input type="radio" name="contact_reason" value="compra_pf" class="h-5 w-5 text-red-600" required><span class="ml-3 text-gray-700">Compra - PF</span></label>
+                        <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-red-50 cursor-pointer"><input type="radio" name="contact_reason" value="suporte" class="h-5 w-5 text-red-600" required><span class="ml-3 text-gray-700">Suporte Técnico</span></label>
+                        <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-red-50 cursor-pointer"><input type="radio" name="contact_reason" value="reclamacao" class="h-5 w-5 text-red-600" required><span class="ml-3 text-gray-700">Reclamação</span></label>
+                        <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-red-50 cursor-pointer"><input type="radio" name="contact_reason" value="outro" class="h-5 w-5 text-red-600"><span class="ml-3 text-gray-700">Outro</span></label>
+                        <input type="text" name="other_reason" placeholder="Especifique..." class="border border-gray-300 rounded-md p-2 mt-2 w-full hidden">
                     </div>
                 </div>
             </div>
+            
+            <!-- ETAPA CONDICIONAL PARA SUPORTE TÉCNICO -->
+            <div id="stepSuporte" class="step hidden">
+                 <!-- Pergunta Clareza -->
+                 <div class="mb-8">
+                    <div class="flex flex-col mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2">Como avalia a clareza das explicações?</h2>
+                        <!-- MELHORIA: Grid responsivo para os botões -->
+                        <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                            <button type="button" class="rating-btn-suporte-clareza flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="1"><span class="text-3xl mb-1">😞</span><span class="text-sm font-medium">Péssimo</span></button>
+                            <button type="button" class="rating-btn-suporte-clareza flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="2"><span class="text-3xl mb-1">😕</span><span class="text-sm font-medium">Ruim</span></button>
+                            <button type="button" class="rating-btn-suporte-clareza flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="3"><span class="text-3xl mb-1">😐</span><span class="text-sm font-medium">Regular</span></button>
+                            <button type="button" class="rating-btn-suporte-clareza flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="4"><span class="text-3xl mb-1">😊</span><span class="text-sm font-medium">Bom</span></button>
+                            <button type="button" class="rating-btn-suporte-clareza flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="5"><span class="text-3xl mb-1">😍</span><span class="text-sm font-medium">Excelente</span></button>
+                        </div>
+                    </div>
+                    <div id="motivoSuporteClarezaContainer" class="hidden mt-4 p-4 border border-red-200 rounded-lg bg-red-50/50">
+                        <label class="block text-sm font-bold text-red-600 mb-3">Poderia informar-nos o motivo?</label>
+                        <div class="space-y-2 text-gray-700">
+                           <label class="flex items-center"><input type="checkbox" name="motivo_suporte_clareza" value="Não entendi bem" class="h-4 w-4 text-red-600 rounded"><span class="ml-2">Não entendi bem</span></label>
+                           <label class="flex items-center"><input type="checkbox" name="motivo_suporte_clareza" value="Explicações confusas" class="h-4 w-4 text-red-600 rounded"><span class="ml-2">Explicações confusas</span></label>
+                           <label class="flex items-center"><input type="checkbox" name="motivo_suporte_clareza" value="Faltou clareza" class="h-4 w-4 text-red-600 rounded"><span class="ml-2">Faltou clareza</span></label>
+                        </div>
+                    </div>
+                    <input type="hidden" id="suporte_rating_clareza" name="suporte_rating_clareza">
+                </div>
+                <hr class="my-8 border-gray-200">
+                
+                <!-- Pergunta Resolução -->
+                <div class="mb-8">
+                     <div class="flex flex-col mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2">Como avalia a resolução do seu problema?</h2>
+                        <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                           <button type="button" class="rating-btn-suporte-resolucao flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="1"><span class="text-3xl mb-1">😞</span><span class="text-sm font-medium">Péssimo</span></button>
+                           <button type="button" class="rating-btn-suporte-resolucao flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="2"><span class="text-3xl mb-1">😕</span><span class="text-sm font-medium">Ruim</span></button>
+                           <button type="button" class="rating-btn-suporte-resolucao flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="3"><span class="text-3xl mb-1">😐</span><span class="text-sm font-medium">Regular</span></button>
+                           <button type="button" class="rating-btn-suporte-resolucao flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="4"><span class="text-3xl mb-1">😊</span><span class="text-sm font-medium">Bom</span></button>
+                           <button type="button" class="rating-btn-suporte-resolucao flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="5"><span class="text-3xl mb-1">😍</span><span class="text-sm font-medium">Excelente</span></button>
+                        </div>
+                    </div>
+                    <div id="motivoSuporteResolucaoContainer" class="hidden mt-4 p-4 border border-red-200 rounded-lg bg-red-50/50">
+                        <label class="block text-sm font-bold text-red-600 mb-3">Poderia informar-nos o motivo?</label>
+                        <div class="space-y-2 text-gray-700">
+                           <label class="flex items-center"><input type="checkbox" name="motivo_suporte_resolucao" value="Não resolveram" class="h-4 w-4 text-red-600 rounded"><span class="ml-2">Não resolveram</span></label>
+                           <label class="flex items-center"><input type="checkbox" name="motivo_suporte_resolucao" value="Problema continua" class="h-4 w-4 text-red-600 rounded"><span class="ml-2">Problema continua</span></label>
+                           <label class="flex items-center"><input type="checkbox" name="motivo_suporte_resolucao" value="Fiquei sem solução" class="h-4 w-4 text-red-600 rounded"><span class="ml-2">Fiquei sem solução</span></label>
+                           <label class="flex items-center"><input type="checkbox" name="motivo_suporte_resolucao" value="Prometeram retornar e não cumpriram" class="h-4 w-4 text-red-600 rounded"><span class="ml-2">Prometeram retornar e não cumpriram</span></label>
+                        </div>
+                    </div>
+                    <input type="hidden" id="suporte_rating_resolucao" name="suporte_rating_resolucao">
+                </div>
+                <hr class="my-8 border-gray-200">
 
+                <!-- Pergunta Tempo Resolução -->
+                <div class="mb-8">
+                     <div class="flex flex-col mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2">Como avalia o tempo para resolver a sua demanda?</h2>
+                        <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                           <button type="button" class="rating-btn-suporte-tempo-resolucao flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="1"><span class="text-3xl mb-1">😞</span><span class="text-sm font-medium">Péssimo</span></button>
+                           <button type="button" class="rating-btn-suporte-tempo-resolucao flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="2"><span class="text-3xl mb-1">😕</span><span class="text-sm font-medium">Ruim</span></button>
+                           <button type="button" class="rating-btn-suporte-tempo-resolucao flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="3"><span class="text-3xl mb-1">😐</span><span class="text-sm font-medium">Regular</span></button>
+                           <button type="button" class="rating-btn-suporte-tempo-resolucao flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="4"><span class="text-3xl mb-1">😊</span><span class="text-sm font-medium">Bom</span></button>
+                           <button type="button" class="rating-btn-suporte-tempo-resolucao flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="5"><span class="text-3xl mb-1">😍</span><span class="text-sm font-medium">Excelente</span></button>
+                        </div>
+                    </div>
+                    <div id="motivoSuporteTempoResolucaoContainer" class="hidden mt-4 p-4 border border-red-200 rounded-lg bg-red-50/50">
+                        <label class="block text-sm font-bold text-red-600 mb-3">Poderia informar-nos o motivo?</label>
+                        <div class="space-y-2 text-gray-700">
+                           <label class="flex items-center"><input type="checkbox" name="motivo_suporte_tempo_resolucao" value="Demorou demais" class="h-4 w-4 text-red-600 rounded"><span class="ml-2">Demorou demais</span></label>
+                           <label class="flex items-center"><input type="checkbox" name="motivo_suporte_tempo_resolucao" value="Processo lento" class="h-4 w-4 text-red-600 rounded"><span class="ml-2">Processo lento</span></label>
+                           <label class="flex items-center"><input type="checkbox" name="motivo_suporte_tempo_resolucao" value="Muito tempo gasto" class="h-4 w-4 text-red-600 rounded"><span class="ml-2">Muito tempo gasto</span></label>
+                        </div>
+                    </div>
+                    <input type="hidden" id="suporte_rating_tempo_resolucao" name="suporte_rating_tempo_resolucao">
+                </div>
+            </div>
+
+            <!-- ETAPA 2: AVALIAÇÕES GERAIS (FLUXO NORMAL) -->
             <div id="step2" class="step hidden">
-                <div class="mb-8 text-center">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-2">Como você avalia o nosso atendimento?</h2>
-                    <p class="text-gray-600">Selecione uma opção abaixo</p>
+                 <!-- Pergunta Atendimento Geral -->
+                 <div class="mb-8">
+                    <div class="flex flex-col mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2">Como avalia o nosso atendimento?</h2>
+                        <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                            <button type="button" class="rating-btn-geral flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="1"><span class="text-3xl mb-1">😞</span><span class="text-sm font-medium">Péssimo</span></button>
+                            <button type="button" class="rating-btn-geral flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="2"><span class="text-3xl mb-1">😕</span><span class="text-sm font-medium">Ruim</span></button>
+                            <button type="button" class="rating-btn-geral flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="3"><span class="text-3xl mb-1">😐</span><span class="text-sm font-medium">Regular</span></button>
+                            <button type="button" class="rating-btn-geral flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="4"><span class="text-3xl mb-1">😊</span><span class="text-sm font-medium">Bom</span></button>
+                            <button type="button" class="rating-btn-geral flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="5"><span class="text-3xl mb-1">😍</span><span class="text-sm font-medium">Excelente</span></button>
+                        </div>
+                    </div>
+                    <div id="motivoGeralContainer" class="hidden p-4 border border-red-200 rounded-lg bg-red-50/50">
+                        <label class="block text-sm font-bold text-red-600 mb-3">Poderia informar-nos o motivo?</label>
+                        <div class="space-y-2 text-gray-700">
+                            <label class="flex items-center"><input type="checkbox" name="motivo_geral" value="Demora no atendimento"><span class="ml-2">Demora no atendimento</span></label>
+                            <label class="flex items-center"><input type="checkbox" name="motivo_geral" value="Vendedor não demonstrou conhecimento"><span class="ml-2">Vendedor não demonstrou conhecimento</span></label>
+                            <label class="flex items-center"><input type="checkbox" name="motivo_geral" value="Falta de cordialidade/simpatia"><span class="ml-2">Falta de cordialidade/simpatia</span></label>
+                            <label class="flex items-center"><input type="checkbox" name="motivo_geral" value="Não resolveu o meu problema"><span class="ml-2">Não resolveu o meu problema</span></label>
+                        </div>
+                    </div>
+                    <input type="hidden" id="rating_geral" name="rating_geral">
                 </div>
+                <hr class="my-8 border-gray-200">
 
-                <div class="flex justify-center space-x-4 mb-8 flex-wrap">
-                    <button type="button" class="rating-btn-geral flex flex-col items-center p-4 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 focus:outline-none" data-value="1">
-                        <span class="text-3xl mb-1">😞</span>
-                        <span class="text-sm font-medium">Péssimo</span>
-                    </button>
-                    <button type="button" class="rating-btn-geral flex flex-col items-center p-4 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 focus:outline-none" data-value="2">
-                        <span class="text-3xl mb-1">😕</span>
-                        <span class="text-sm font-medium">Ruim</span>
-                    </button>
-                    <button type="button" class="rating-btn-geral flex flex-col items-center p-4 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 focus:outline-none" data-value="3">
-                        <span class="text-3xl mb-1">😐</span>
-                        <span class="text-sm font-medium">Regular</span>
-                    </button>
-                    <button type="button" class="rating-btn-geral flex flex-col items-center p-4 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 focus:outline-none" data-value="4">
-                        <span class="text-3xl mb-1">😊</span>
-                        <span class="text-sm font-medium">Bom</span>
-                    </button>
-                    <button type="button" class="rating-btn-geral flex flex-col items-center p-4 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 focus:outline-none" data-value="5">
-                        <span class="text-3xl mb-1">😍</span>
-                        <span class="text-sm font-medium">Excelente</span>
-                    </button>
+                <!-- Pergunta Atendimento do Caixa -->
+                 <div class="mb-8">
+                    <div class="flex flex-col mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2">Como avalia o atendimento do caixa?</h2>
+                        <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                           <button type="button" class="rating-btn-caixa flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="1"><span class="text-3xl mb-1">😞</span><span class="text-sm font-medium">Péssimo</span></button>
+                           <button type="button" class="rating-btn-caixa flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="2"><span class="text-3xl mb-1">😕</span><span class="text-sm font-medium">Ruim</span></button>
+                           <button type="button" class="rating-btn-caixa flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="3"><span class="text-3xl mb-1">😐</span><span class="text-sm font-medium">Regular</span></button>
+                           <button type="button" class="rating-btn-caixa flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="4"><span class="text-3xl mb-1">😊</span><span class="text-sm font-medium">Bom</span></button>
+                           <button type="button" class="rating-btn-caixa flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="5"><span class="text-3xl mb-1">😍</span><span class="text-sm font-medium">Excelente</span></button>
+                        </div>
+                    </div>
+                    <div id="motivoCaixaContainer" class="hidden p-4 border border-red-200 rounded-lg bg-red-50/50">
+                        <label class="block text-sm font-bold text-red-600 mb-3">Poderia informar-nos o motivo?</label>
+                         <div class="space-y-2 text-gray-700">
+                            <label class="flex items-center"><input type="checkbox" name="motivo_caixa" value="Demora na fila / no caixa"><span class="ml-2">Demora na fila / no caixa</span></label>
+                            <label class="flex items-center"><input type="checkbox" name="motivo_caixa" value="Erro na cobrança"><span class="ml-2">Erro na cobrança</span></label>
+                            <label class="flex items-center"><input type="checkbox" name="motivo_caixa" value="Falta de opções de pagamento"><span class="ml-2">Falta de opções de pagamento</span></label>
+                            <label class="flex items-center"><input type="checkbox" name="motivo_caixa" value="Atendimento pouco cordial"><span class="ml-2">Atendimento pouco cordial</span></label>
+                        </div>
+                    </div>
+                    <input type="hidden" id="rating_caixa" name="rating_caixa">
                 </div>
+                <hr class="my-8 border-gray-200">
 
-                <div id="motivoNegativoContainer" class="mt-4 hidden">
-                    <label for="motivoNegativo" class="block text-sm text-red-600"><b>Poderia nos informar o motivo?</b></label>
-                    <textarea id="motivoNegativo" name="motivoNegativo" class="w-full border rounded px-3 py-2 mt-1"></textarea>
+                 <!-- Pergunta Entrega -->
+                 <div class="mb-8">
+                    <div class="flex flex-col mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2">Como avalia o momento da entrega?</h2>
+                        <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                           <button type="button" class="rating-btn-entrega flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="1"><span class="text-3xl mb-1">😞</span><span class="text-sm font-medium">Péssimo</span></button>
+                           <button type="button" class="rating-btn-entrega flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="2"><span class="text-3xl mb-1">😕</span><span class="text-sm font-medium">Ruim</span></button>
+                           <button type="button" class="rating-btn-entrega flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="3"><span class="text-3xl mb-1">😐</span><span class="text-sm font-medium">Regular</span></button>
+                           <button type="button" class="rating-btn-entrega flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="4"><span class="text-3xl mb-1">😊</span><span class="text-sm font-medium">Bom</span></button>
+                           <button type="button" class="rating-btn-entrega flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-red-50 border" data-value="5"><span class="text-3xl mb-1">😍</span><span class="text-sm font-medium">Excelente</span></button>
+                        </div>
+                    </div>
+                     <div id="motivoEntregaContainer" class="hidden p-4 border border-red-200 rounded-lg bg-red-50/50">
+                        <label class="block text-sm font-bold text-red-600 mb-3">Poderia informar-nos o motivo?</label>
+                         <div class="space-y-2 text-gray-700">
+                            <label class="flex items-center"><input type="checkbox" name="motivo_entrega" value="Atraso na entrega"><span class="ml-2">Atraso na entrega</span></label>
+                            <label class="flex items-center"><input type="checkbox" name="motivo_entrega" value="Produto avariado/danificado"><span class="ml-2">Produto avariado/danificado</span></label>
+                            <label class="flex items-center"><input type="checkbox" name="motivo_entrega" value="Entregador pouco profissional"><span class="ml-2">Entregador pouco profissional</span></label>
+                            <label class="flex items-center"><input type="checkbox" name="motivo_entrega" value="Falta de comunicação sobre a entrega"><span class="ml-2">Falta de comunicação sobre a entrega</span></label>
+                        </div>
+                    </div>
+                    <input type="hidden" id="rating_entrega" name="rating_entrega">
                 </div>
-                <input type="hidden" id="rating_geral" name="rating_geral" required>
             </div>
 
+            <!-- ETAPA 3: Sugestão -->
             <div id="step3" class="step hidden">
-                <div class="mb-8 text-center">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-2">Como você avalia o atendimento do caixa?</h2>
-                    <p class="text-gray-600">Selecione uma opção abaixo</p>
-                </div>
-
-                <div class="flex justify-center space-x-4 mb-8 flex-wrap">
-                    <button type="button" class="rating-btn-caixa flex flex-col items-center p-4 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 focus:outline-none" data-value="1">
-                        <span class="text-3xl mb-1">😞</span>
-                        <span class="text-sm font-medium">Péssimo</span>
-                    </button>
-                    <button type="button" class="rating-btn-caixa flex flex-col items-center p-4 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 focus:outline-none" data-value="2">
-                        <span class="text-3xl mb-1">😕</span>
-                        <span class="text-sm font-medium">Ruim</span>
-                    </button>
-                    <button type="button" class="rating-btn-caixa flex flex-col items-center p-4 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 focus:outline-none" data-value="3">
-                        <span class="text-3xl mb-1">😐</span>
-                        <span class="text-sm font-medium">Regular</span>
-                    </button>
-                    <button type="button" class="rating-btn-caixa flex flex-col items-center p-4 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 focus:outline-none" data-value="4">
-                        <span class="text-3xl mb-1">😊</span>
-                        <span class="text-sm font-medium">Bom</span>
-                    </button>
-                    <button type="button" class="rating-btn-caixa flex flex-col items-center p-4 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 focus:outline-none" data-value="5">
-                        <span class="text-3xl mb-1">😍</span>
-                        <span class="text-sm font-medium">Excelente</span>
-                    </button>
-                </div>
-
-                <div id="caixaMotivoContainer" class="mt-4 hidden">
-                    <label for="caixaMotivo" class="block text-sm font-semibold text-red-600">Poderia nos informar o motivo?</label>
-                    <textarea id="caixaMotivo" name="caixaMotivo" rows="3" class="w-full border rounded p-2 mt-1"></textarea>
-                </div>
-                <input type="hidden" id="caixa_rating" name="caixa_rating" required>
-            </div>
-
-            <div id="step4" class="step hidden">
-                <div class="mb-8 text-center">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-2">Como você avalia o momento da entrega?</h2>
-                    <p class="text-gray-600">Selecione uma opção abaixo</p>
-                </div>
-
-                <div class="flex justify-center space-x-4 mb-8 flex-wrap">
-                    <button type="button" class="rating-btn-entrega flex flex-col items-center p-4 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 focus:outline-none" data-value="1">
-                        <span class="text-3xl mb-1">😞</span>
-                        <span class="text-sm font-medium">Péssimo</span>
-                    </button>
-                    <button type="button" class="rating-btn-entrega flex flex-col items-center p-4 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 focus:outline-none" data-value="2">
-                        <span class="text-3xl mb-1">😕</span>
-                        <span class="text-sm font-medium">Ruim</span>
-                    </button>
-                    <button type="button" class="rating-btn-entrega flex flex-col items-center p-4 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 focus:outline-none" data-value="3">
-                        <span class="text-3xl mb-1">😐</span>
-                        <span class="text-sm font-medium">Regular</span>
-                    </button>
-                    <button type="button" class="rating-btn-entrega flex flex-col items-center p-4 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 focus:outline-none" data-value="4">
-                        <span class="text-3xl mb-1">😊</span>
-                        <span class="text-sm font-medium">Bom</span>
-                    </button>
-                    <button type="button" class="rating-btn-entrega flex flex-col items-center p-4 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 focus:outline-none" data-value="5">
-                        <span class="text-3xl mb-1">😍</span>
-                        <span class="text-sm font-medium">Excelente</span>
-                    </button>
-                </div>
-
-                <div id="entregaMotivoContainer" class="mt-4 hidden">
-                    <label for="entregaMotivo" class="block text-sm font-semibold text-red-600">Poderia nos informar o motivo?</label>
-                    <textarea id="entregaMotivo" name="entregaMotivo" rows="3" class="w-full border rounded p-2 mt-1"></textarea>
-                </div>
-                <input type="hidden" id="entrega_rating" name="entrega_rating" required>
-            </div>
-
-            <div id="step5" class="step hidden">
                 <div class="mb-6">
                     <h2 class="text-xl font-semibold text-gray-800 mb-2">O que podemos melhorar?</h2>
-                    <p class="text-gray-600 mb-4">Nos conte o que podemos fazer para te atender ainda melhor</p>
-
-                    <textarea name="suggestion" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500" placeholder="Digite sua sugestão aqui..."></textarea>
+                    <textarea name="suggestion" rows="4" class="w-full px-4 py-3 border rounded-lg" placeholder="Digite a sua sugestão aqui..."></textarea>
                 </div>
             </div>
 
-            <div id="step6" class="step hidden">
-                <div class="mb-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-2">Dados de contato (opcional)</h2>
-                    <p class="text-gray-600 mb-4">Preencha se deseja que entremos em contato</p>
-
+            <!-- ETAPA 4: Contato -->
+            <div id="step4" class="step hidden">
+                 <div class="mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-2">Dados de contacto (opcional)</h2>
                     <div class="space-y-4">
-                        <div>
-                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
-                            <input type="text" id="name" name="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500" placeholder="Seu nome">
-                        </div>
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-                            <input type="email" id="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500" placeholder="seu@email.com">
-                        </div>
-                        <div>
-                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
-                            <input type="tel" id="phone" name="phone" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500" placeholder="(00) 00000-0000">
-                        </div>
+                        <div><label for="name" class="block text-sm font-medium text-gray-700">Nome</label><input type="text" id="name" name="name" class="w-full px-4 py-3 border rounded-lg"></div>
+                        <div><label for="email" class="block text-sm font-medium text-gray-700">E-mail</label><input type="email" id="email" name="email" class="w-full px-4 py-3 border rounded-lg"></div>
+                        <div><label for="phone" class="block text-sm font-medium text-gray-700">Telefone</label><input type="tel" id="phone" name="phone" class="w-full px-4 py-3 border rounded-lg"></div>
                     </div>
                 </div>
             </div>
 
+            <!-- Botões de Navegação -->
             <div class="flex justify-between mt-8">
-                <button type="button" id="prevBtn" class="hidden px-6 py-3 text-red-600 font-medium rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                    <i class="fas fa-arrow-left mr-2"></i> Voltar
-                </button>
-                <button type="button" id="nextBtn" class="ml-auto px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                    Avançar <i class="fas fa-arrow-right ml-2"></i>
-                </button>
-                <button type="submit" id="submitBtn" class="hidden ml-auto px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
-                    Enviar pesquisa <i class="fas fa-paper-plane ml-2"></i>
-                </button>
+                <button type="button" id="prevBtn" class="hidden px-6 py-3 text-red-600 font-medium rounded-lg hover:bg-red-50"> Voltar</button>
+                <button type="button" id="nextBtn" class="ml-auto px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700">Avançar</button>
+                <button type="submit" id="submitBtn" class="hidden ml-auto px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700">Enviar pesquisa</button>
             </div>
         </form>
 
+        <!-- MENSAGEM DE AGRADECIMENTO -->
         <div id="thankYou" class="thank-you p-8 text-center hidden">
-            <div class="mx-auto max-w-xs mb-6">
-                <img src="bd17e749-3f02-46e7-9a4c-1e8c35035904.jpeg" alt="Ícone de confirmação verde com um selo de aprovação e um balão de diálogo escrito Obrigado!" class="w-full">
-            </div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">Obrigado pelo seu feedback!</h2>
-            <p class="text-gray-600 mb-6">Sua opinião é muito valiosa para nós. Você contribuiu para melhorarmos nossos serviços.</p>
-            <button class="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" onclick="location.reload()">
-                <i class="fas fa-redo mr-2"></i> Enviar nova pesquisa
-            </button>
+            <img src="bd17e749-3f02-46e7-9a4c-1e8c35035904.jpeg" alt="boneco joey" class="mx-auto mb-4 w-48">
+            <h2 class="text-2xl font-bold">Obrigado pelo seu feedback!</h2>
+            <p class="text-gray-600 mt-2">A sua opinião é muito valiosa para nós.</p>
+            <!-- NOVO: Mensagem de redirecionamento -->
+            <p id="redirectMessage" class="text-gray-500 text-sm mt-4">Será redirecionado para a página inicial em 5 segundos...</p>
         </div>
     </div>
 
+    <!-- SCRIPT COM LÓGICA ATUALIZADA -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('surveyForm');
-        const steps = document.querySelectorAll('.step');
+        const allSteps = document.querySelectorAll('.step');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const submitBtn = document.getElementById('submitBtn');
         const progressBar = document.getElementById('progress');
         const thankYou = document.getElementById('thankYou');
-        let currentStep = 0;
+        
+        let currentStepId = 'step1';
 
-        // --- Funções para manipulação dos botões de avaliação e motivos ---
-        // Adaptei esta função para ser mais genérica e funcionar com múltiplos grupos de botões
+        const flowMap = {
+            general: ['step1', 'step2', 'step3', 'step4'],
+            suporte: ['step1', 'stepSuporte', 'step3', 'step4'],
+            reclamacao: ['step1', 'step3', 'step4']
+        };
+        let currentFlow = flowMap.general;
+
+        const getStepElement = (id) => document.getElementById(id);
+
         function setupRatingButtons(selector, hiddenInputId, motivoContainerId) {
             const buttons = document.querySelectorAll(selector);
             const hiddenInput = document.getElementById(hiddenInputId);
-            const motivoContainer = document.getElementById(motivoContainerId);
+            const motivoContainer = motivoContainerId ? document.getElementById(motivoContainerId) : null;
+            if (!hiddenInput) return;
 
             buttons.forEach(btn => {
                 btn.addEventListener('click', function() {
-                    buttons.forEach(b => b.classList.remove('active')); // Remove 'active' de todos no grupo
-                    this.classList.add('active'); // Adiciona 'active' ao clicado
-                    hiddenInput.value = this.dataset.value; // Atualiza o valor do input hidden
-
-                    // Mostra ou esconde o container de motivo baseado na avaliação
-                    const valor = parseInt(this.dataset.value);
-                    if (valor <= 3) {
-                        motivoContainer.classList.remove('hidden');
-                        motivoContainer.querySelector('textarea').required = true; // Torna o textarea obrigatório
-                    } else {
-                        motivoContainer.classList.add('hidden');
-                        motivoContainer.querySelector('textarea').required = false; // Torna o textarea não obrigatório
-                        motivoContainer.querySelector('textarea').value = ''; // Limpa o valor
+                    buttons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    hiddenInput.value = this.dataset.value;
+                    
+                    if (motivoContainer) {
+                        const valor = parseInt(this.dataset.value);
+                        motivoContainer.classList.toggle('hidden', valor > 3);
+                        if (valor > 3) {
+                            motivoContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                        }
                     }
                 });
             });
         }
+        
+        setupRatingButtons('.rating-btn-suporte-clareza', 'suporte_rating_clareza', 'motivoSuporteClarezaContainer');
+        setupRatingButtons('.rating-btn-suporte-resolucao', 'suporte_rating_resolucao', 'motivoSuporteResolucaoContainer');
+        setupRatingButtons('.rating-btn-suporte-tempo-resolucao', 'suporte_rating_tempo_resolucao', 'motivoSuporteTempoResolucaoContainer');
+        setupRatingButtons('.rating-btn-geral', 'rating_geral', 'motivoGeralContainer');
+        setupRatingButtons('.rating-btn-caixa', 'rating_caixa', 'motivoCaixaContainer');
+        setupRatingButtons('.rating-btn-entrega', 'rating_entrega', 'motivoEntregaContainer');
 
-        // Configura os botões de avaliação para cada seção específica
-        setupRatingButtons('.rating-btn-geral', 'rating_geral', 'motivoNegativoContainer');
-        setupRatingButtons('.rating-btn-caixa', 'caixa_rating', 'caixaMotivoContainer');
-        setupRatingButtons('.rating-btn-entrega', 'entrega_rating', 'entregaMotivoContainer');
+        function showStep(id) {
+            currentStepId = id;
+            allSteps.forEach(step => step.classList.add('hidden'));
+            getStepElement(id).classList.remove('hidden');
+            updateProgress();
+            updateButtons();
+        }
 
-
-        // Exibe o passo atual e atualiza a barra de progresso
-        function showStep(step) {
-            steps.forEach((s, index) => {
-                s.classList.toggle('hidden', index !== step);
-            });
-
-            const progress = ((step + 1) / steps.length) * 100;
+        function updateProgress() {
+            const currentPosition = currentFlow.indexOf(currentStepId);
+            const progress = ((currentPosition) / (currentFlow.length - 1)) * 100;
             progressBar.style.width = `${progress}%`;
         }
-
-        // Atualiza a visibilidade dos botões de navegação (Voltar, Avançar, Enviar)
+        
         function updateButtons() {
-            prevBtn.classList.toggle('hidden', currentStep === 0);
-            nextBtn.classList.toggle('hidden', currentStep === steps.length - 1);
-            submitBtn.classList.toggle('hidden', currentStep !== steps.length - 1);
-        }
+            const currentPosition = currentFlow.indexOf(currentStepId);
+            const isFirstStep = currentPosition === 0;
+            const isLastStep = currentPosition === currentFlow.length - 1;
 
-        // --- Lógica para os botões de navegação ---
+            prevBtn.classList.toggle('hidden', isFirstStep);
+            nextBtn.classList.toggle('hidden', isLastStep);
+            submitBtn.classList.toggle('hidden', !isLastStep);
+        }
+        
         prevBtn.addEventListener('click', () => {
-            if (currentStep > 0) {
-                currentStep--;
-                showStep(currentStep);
-                updateButtons();
+            const currentPosition = currentFlow.indexOf(currentStepId);
+            if (currentPosition > 0) {
+                showStep(currentFlow[currentPosition - 1]);
             }
         });
 
-        nextBtn.addEventListener('click', nextStep); // Chama nextStep para validação antes de avançar
+        nextBtn.addEventListener('click', () => {
+            if (!validateCurrentStep()) return;
 
-        // Ativar/desativar campo "Especifique..." baseado na seleção "Outro"
-        const otherRadio = document.querySelector('input[name="contact_reason"][value="outro"]');
-        const otherReasonInput = document.querySelector('input[name="other_reason"]');
-
-        if (otherRadio && otherReasonInput) {
-            otherRadio.addEventListener('change', function() {
-                otherReasonInput.disabled = !this.checked;
-                if (this.checked) {
-                    otherReasonInput.focus();
+            if (currentStepId === 'step1') {
+                const selectedReason = document.querySelector('input[name="contact_reason"]:checked')?.value;
+                if (selectedReason === 'suporte') {
+                    currentFlow = flowMap.suporte;
+                } else if (selectedReason === 'reclamacao') {
+                    currentFlow = flowMap.reclamacao;
                 } else {
-                    otherReasonInput.value = ''; // Limpa o campo se desmarcado
+                    currentFlow = flowMap.general;
                 }
-            });
-        }
+            }
 
-        // --- Lógica de validação e avanço dos passos ---
-        function nextStep() {
+            const currentPosition = currentFlow.indexOf(currentStepId);
+            if (currentPosition < currentFlow.length - 1) {
+                showStep(currentFlow[currentPosition + 1]);
+            }
+        });
+        
+        function validateCurrentStep() {
             let canAdvance = true;
-
-            if (currentStep === 0) { // Step 1: Motivo do Contato
-                const selectedReason = document.querySelector('input[name="contact_reason"]:checked');
-                if (!selectedReason) {
-                    alert('Por favor, selecione o motivo do contato.');
-                    canAdvance = false;
-                } else if (selectedReason.value === 'outro' && !otherReasonInput.value.trim()) {
-                    alert('Por favor, especifique o outro motivo.');
-                    canAdvance = false;
+            if (currentStepId === 'step1') {
+                const reason = document.querySelector('input[name="contact_reason"]:checked');
+                if (!reason) {
+                    alert('Por favor, selecione o motivo do contacto.'); canAdvance = false;
+                } else if (reason.value === 'outro' && !document.querySelector('input[name="other_reason"]').value.trim()) {
+                    alert('Por favor, especifique o outro motivo.'); canAdvance = false;
                 }
-            } else if (currentStep === 1) { // Step 2: Avaliação Geral
-                const ratingGeralInput = document.getElementById('rating_geral');
-                if (!ratingGeralInput.value) {
-                    alert('Por favor, avalie o nosso atendimento general.');
-                    canAdvance = false;
-                } else {
-                    const motivoContainer = document.getElementById('motivoNegativoContainer');
-                    if (!motivoContainer.classList.contains('hidden') && !motivoContainer.querySelector('textarea').value.trim()) {
-                        alert('Por favor, informe o motivo da sua avaliação.');
-                        canAdvance = false;
-                    }
+            } else if (currentStepId === 'stepSuporte') {
+                if (!document.getElementById('suporte_rating_clareza').value || 
+                    !document.getElementById('suporte_rating_resolucao').value || 
+                    !document.getElementById('suporte_rating_tempo_resolucao').value) {
+                    alert('Por favor, responda a todas as perguntas sobre o suporte.'); canAdvance = false;
                 }
-            } else if (currentStep === 2) { // Step 3: Avaliação do Caixa
-                const caixaRatingInput = document.getElementById('caixa_rating');
-                if (!caixaRatingInput.value) {
-                    alert('Por favor, avalie o atendimento do caixa.');
-                    canAdvance = false;
-                } else {
-                    const motivoContainer = document.getElementById('caixaMotivoContainer');
-                    if (!motivoContainer.classList.contains('hidden') && !motivoContainer.querySelector('textarea').value.trim()) {
-                        alert('Por favor, informe o motivo da sua avaliação do caixa.');
-                        canAdvance = false;
-                    }
-                }
-            } else if (currentStep === 3) { // Step 4: Avaliação da Entrega
-                const entregaRatingInput = document.getElementById('entrega_rating');
-                if (!entregaRatingInput.value) {
-                    alert('Por favor, avalie o momento da entrega.');
-                    canAdvance = false;
-                } else {
-                    const motivoContainer = document.getElementById('entregaMotivoContainer');
-                    if (!motivoContainer.classList.contains('hidden') && !motivoContainer.querySelector('textarea').value.trim()) {
-                        alert('Por favor, informe o motivo da sua avaliação da entrega.');
-                        canAdvance = false;
-                    }
+            } else if (currentStepId === 'step2') {
+                if (!document.getElementById('rating_geral').value || !document.getElementById('rating_caixa').value || !document.getElementById('rating_entrega').value) {
+                    alert('Por favor, responda a todas as perguntas.'); canAdvance = false;
                 }
             }
-            // Steps 5 e 6 (Sugestão e Contato) são opcionais, não precisam de validação para avançar
-
-            if (canAdvance) {
-                if (currentStep < steps.length - 1) {
-                    currentStep++;
-                    showStep(currentStep);
-                    updateButtons();
-                }
-            }
+            return canAdvance;
         }
 
-        // --- Envio do formulário ---
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault(); // Evita o comportamento padrão de envio do formulário
+        document.querySelectorAll('input[name="contact_reason"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const otherReasonInput = document.querySelector('input[name="other_reason"]');
+                otherReasonInput.classList.toggle('hidden', this.value !== 'outro');
+                if (this.value === 'outro') otherReasonInput.focus();
+                else otherReasonInput.value = '';
+            });
+        });
 
-            // Coletando dados de todos os campos
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
             const contactReasonRadio = document.querySelector('input[name="contact_reason"]:checked');
             const contactReason = contactReasonRadio ? contactReasonRadio.value : '';
             const otherReason = document.querySelector('input[name="other_reason"]').value;
+            const getMotivos = (name) => Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value).join(', ');
 
-            const ratingGeral = document.getElementById('rating_geral').value;
-            const motivoGeral = document.getElementById('motivoNegativo').value;
-
-            const ratingCaixa = document.getElementById('caixa_rating').value;
-            const motivoCaixa = document.getElementById('caixaMotivo').value;
-
-            const ratingEntrega = document.getElementById('entrega_rating').value;
-            const motivoEntrega = document.getElementById('entregaMotivo').value;
-
-            const suggestion = document.querySelector('textarea[name="suggestion"]').value;
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-
-            // Construindo o objeto de dados para envio
             const dados = {
-                nome: name,
-                email: email,
-                telefone: phone,
                 motivo_contato: contactReason === 'outro' ? otherReason : contactReason,
-                atendimento: ratingGeral,
-                comentario_atendimento: motivoGeral,
-                atendimento_caixa: ratingCaixa,
-                comentario_caixa: motivoCaixa,
-                entrega: ratingEntrega,
-                comentario_entrega: motivoEntrega,
-                sugestao: suggestion
+                rating_geral: document.getElementById('rating_geral').value,
+                motivo_geral: getMotivos('motivo_geral'),
+                rating_caixa: document.getElementById('rating_caixa').value,
+                motivo_caixa: getMotivos('motivo_caixa'),
+                rating_entrega: document.getElementById('rating_entrega').value,
+                motivo_entrega: getMotivos('motivo_entrega'),
+                suporte_rating_clareza: document.getElementById('suporte_rating_clareza').value,
+                suporte_motivo_clareza: getMotivos('motivo_suporte_clareza'),
+                suporte_rating_resolucao: document.getElementById('suporte_rating_resolucao').value,
+                suporte_motivo_resolucao: getMotivos('motivo_suporte_resolucao'),
+                suporte_rating_tempo_resolucao: document.getElementById('suporte_rating_tempo_resolucao').value,
+                suporte_motivo_tempo_resolucao: getMotivos('motivo_suporte_tempo_resolucao'),
+                sugestao: document.querySelector('textarea[name="suggestion"]').value,
+                nome: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                telefone: document.getElementById('phone').value,
             };
 
-            // Log para depuração (verifique no console do navegador)
             console.log('Dados a serem enviados:', dados);
 
             try {
@@ -425,29 +410,39 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(dados)
                 });
-
                 if (!resposta.ok) {
-                    const errorText = await resposta.text();
-                    throw new Error(`Erro ao enviar dados: ${resposta.status} - ${resposta.statusText}. Detalhes: ${errorText}`);
+                    throw new Error(`Erro na requisição: ${resposta.statusText}`);
                 }
+                
+                form.classList.add('hidden');
+                document.querySelector('.bg-gradient-to-r').classList.add('hidden');
+                thankYou.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
 
-                alert('Resposta enviada com sucesso!');
-                form.classList.add('hidden'); // Esconde o formulário
-                thankYou.classList.remove('hidden'); // Mostra a mensagem de agradecimento
-                thankYou.classList.add('show'); // Adiciona classe para eventual animação
-                window.scrollTo({ top: 0, behavior: 'smooth' }); // Volta para o topo da página
+                // --- NOVO: LÓGICA DE REDIRECIONAMENTO ---
+                let countdown = 5;
+                const redirectMessage = document.getElementById('redirectMessage');
+                
+                const interval = setInterval(() => {
+                    countdown--;
+                    if(redirectMessage) {
+                        redirectMessage.textContent = `Será redirecionado para a página inicial em ${countdown} segundos...`;
+                    }
+                    if (countdown <= 0) {
+                        clearInterval(interval);
+                        window.location.href = 'index.html'; // Altere para a URL da sua página inicial se for diferente
+                    }
+                }, 1000); // Executa a cada 1 segundo
 
             } catch (erro) {
                 console.error('Erro ao enviar:', erro);
-                alert('Erro ao enviar resposta. Por favor, verifique sua conexão ou tente novamente mais tarde.');
+                alert('Erro ao enviar resposta. Por favor, tente novamente mais tarde.');
             }
         });
 
-        // Inicia o formulário no primeiro passo
-        showStep(currentStep);
-        updateButtons();
+        showStep('step1');
     });
     </script>
-
 </body>
 </html>
+

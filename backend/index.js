@@ -5,17 +5,13 @@ const { Pool } = require('pg');
 
 const app = express();
 
-// Middlewares
-// Permite requisições de diferentes origens (necessário para frontend/backend em portas diferentes)
-// Para produção, restrinja 'origin' ao domínio do seu frontend.
 app.use(cors({
-  origin: '*', // Permite requisições de qualquer origem - USE APENAS PARA TESTES E DESENVOLVIMENTO
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: '*', 
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
 }));
-app.use(express.json()); // Permite que o Express parseie corpos de requisição JSON
+app.use(express.json());
 
-// Conexão com PostgreSQL
 const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
@@ -24,112 +20,108 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-// Rota para salvar respostas da pesquisa
+
 app.post('/api/respostas', async (req, res) => {
   const {
+    motivo_contato,
+    rating_geral,
+    motivo_geral,
+    rating_caixa,
+    motivo_caixa,
+    rating_entrega,
+    motivo_entrega,
+    suporte_rating_clareza,
+    suporte_motivo_clareza,
+    suporte_rating_resolucao,
+    suporte_motivo_resolucao,
+    suporte_rating_tempo_resolucao,
+    suporte_motivo_tempo_resolucao,
+    sugestao,
     nome,
     email,
     telefone,
-    motivo_contato,
-    atendimento, // avaliação geral
-    atendimento_caixa,
-    entrega,
-    comentario_atendimento,
-    comentario_caixa,
-    comentario_entrega,
-    sugestao // sugestão final
   } = req.body;
 
-  const comentarioCompleto = `
-Atendimento: ${comentario_atendimento || 'Sem observação'}
-Caixa: ${comentario_caixa || 'Sem observação'}
-Entrega: ${comentario_entrega || 'Sem observação'}
-Sugestão final: ${sugestao || 'Sem sugestão'}
-`.trim();
-
   try {
+ 
     const query = `
       INSERT INTO respostas (
-        nome, email, telefone, motivo_contato,
-        atendimento, atendimento_caixa, entrega,
-        comentario_atendimento, comentario_caixa,
-        comentario_entrega, sugestao
-        -- Não inclua 'data_criacao' aqui, se ela tem DEFAULT CURRENT_TIMESTAMP no BD
+        nome, email, telefone, motivo_contato, sugestao,
+        atendimento, comentario_atendimento,
+        atendimento_caixa, comentario_caixa,
+        entrega, comentario_entrega,
+        suporte_clareza, comentario_suporte_clareza,
+        suporte_resolucao, comentario_suporte_resolucao,
+        suporte_tempo_resolucao, comentario_suporte_tempo_resolucao,
+        suporte_tempo_espera -- Coluna que estava faltando, mesmo que seja nula
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
     `;
 
-    await pool.query(query, [
-      nome, email, telefone, motivo_contato,
-      atendimento, atendimento_caixa, entrega,
-      comentario_atendimento, comentario_caixa,
-      comentario_entrega, sugestao
-    ]);
+    const values = [
+      nome || null, email || null, telefone || null, motivo_contato || null, sugestao || null,
+      rating_geral || null,
+      motivo_geral || null,
+      rating_caixa || null,
+      motivo_caixa || null,
+      rating_entrega || null,
+      motivo_entrega || null,
+      suporte_rating_clareza || null,
+      suporte_motivo_clareza || null,
+      suporte_rating_resolucao || null,
+      suporte_motivo_resolucao || null,
+      suporte_rating_tempo_resolucao || null,
+      suporte_motivo_tempo_resolucao || null,
+      null 
+    ];
+    
+    await pool.query(query, values);
+    res.status(201).send({ message: 'Resposta salva com sucesso!' });
 
-    res.status(201).send({ message: 'Resposta salva com sucesso' });
   } catch (error) {
-    console.error('Erro ao salvar resposta:', error);
-    res.status(500).send({ error: 'Erro ao salvar a resposta' });
+    console.error('Erro ao salvar resposta no banco de dados:', error);
+    res.status(500).send({ error: 'Ocorreu um erro interno ao salvar a resposta.' });
   }
 });
 
-// Rota para listar respostas com filtros (usada pelo dashboard)
 app.get('/api/respostas', async (req, res) => {
-  // Pega os parâmetros da query string (filtros)
-  const { motivo_contato, data_inicio, data_fim, atendimento } = req.query; // Adicionei 'atendimento' para o filtro da avaliação geral
-
-  // Nome da coluna de data no seu banco de dados
-  // ESTE NOME DEVE SER EXATAMENTE IGUAL AO DA SUA COLUNA NO BD (confirmado no JSON como 'data_criacao')
+  const { motivo_contato, data_inicio, data_fim, atendimento } = req.query;
   const COLUNA_DATA_DO_BD = 'data_criacao';
+  let query = 'SELECT * FROM respostas WHERE 1=1';
+  const params = [];
 
-  let query = 'SELECT * FROM respostas WHERE 1=1'; // Inicia a query com uma condição sempre verdadeira
-  const params = []; // Array para armazenar os parâmetros para evitar SQL Injection
-
-  // 1. Filtro por Motivo de Contato
   if (motivo_contato) {
     params.push(motivo_contato);
-    query += ` AND motivo_contato = $${params.length}`; // Adiciona condição AND
+    query += ` AND motivo_contato = $${params.length}`;
   }
-
-  // 2. Filtro por Avaliação Geral (atendimento)
-  if (atendimento) {
-    params.push(parseInt(atendimento)); // Garante que o valor é um número
-    query += ` AND atendimento = $${params.length}`; // Filtra pela coluna de atendimento
+  if (atendimento) { 
+    params.push(parseInt(atendimento));
+    query += ` AND atendimento = $${params.length}`;
   }
-
-  // 3. Filtro por Data de Início
   if (data_inicio) {
-    // Adiciona a data de início com a hora 00:00:00 para pegar desde o começo do dia
-    // Usa '::timestamp' para garantir que o PostgreSQL interprete a string como um timestamp
     params.push(`${data_inicio} 00:00:00`);
     query += ` AND ${COLUNA_DATA_DO_BD} >= $${params.length}::timestamp`;
   }
-
-  // 4. Filtro por Data de Fim
   if (data_fim) {
-    // Adiciona a data de fim com a hora 23:59:59 para pegar até o final do dia
-    // Usa '::timestamp' para garantir que o PostgreSQL interprete a string como um timestamp
     params.push(`${data_fim} 23:59:59`);
     query += ` AND ${COLUNA_DATA_DO_BD} <= $${params.length}::timestamp`;
   }
-
-  // 5. Ordenação: sempre ordenar pelos mais recentes
   query += ` ORDER BY ${COLUNA_DATA_DO_BD} DESC`;
 
   try {
-    // LOGS PARA DEPURAR: Verifique o terminal onde seu servidor Node.js está rodando
-    console.log('Query SQL gerada:', query);
-    console.log('Parâmetros da Query:', params);
-
     const resultado = await pool.query(query, params);
-    res.json(resultado.rows); // Envia os dados filtrados de volta ao frontend
+    res.json(resultado.rows);
   } catch (erro) {
     console.error('Erro ao buscar respostas:', erro);
-    res.status(500).send({ error: 'Erro ao buscar a resposta' });
+    res.status(500).send({ error: 'Erro ao buscar as respostas.' });
   }
 });
 
-// Iniciar servidor na rede local
-app.listen(3000, '192.168.1.210', () => {
-  console.log('Servidor acessível na rede local em http://192.168.1.210:3000');
+
+const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || '192.168.1.210';
+
+app.listen(PORT, HOST, () => {
+  console.log(`Servidor rodando e acessível em http://${HOST}:${PORT}`);
 });
+
