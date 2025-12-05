@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Página | MaquiSul</title>
+  
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        
+    </style>
+</head>
+<body class="flex items-center justify-center p-4 min-h-screen bg-gray-100">
+    
+    
+    <div class="w-full max-w-2xl bg-white rounded-xl shadow-xl overflow-hidden">
+        
+        
+        <header class="bg-gradient-to-r from-red-600 to-black p-8 text-center text-white">
+            <div class="flex justify-center mb-4">
+               
+                <img src="img/logo maquisul pequena.png" alt="Logo MaquiSul" class="h-24 w-auto object-contain bg-white/10 rounded-lg p-2 backdrop-blur-sm">
+            </div>
+            <h1 class="text-3xl font-bold mb-2">Sejam Bem-vindos</h1>
+            <p class="text-red-100 text-lg font-medium">A sua opinião é muito importante para nós!</p>
+        </header>
+
+        
+        <main class="p-10 text-center">
+            <h2 class="text-2xl text-gray-800 font-bold mb-8">
+                Preencha e concorra
+            </h2>
+            
+            
+            <button id="prosseguir" class="px-8 py-4 bg-red-600 text-white font-bold rounded-lg text-lg shadow-lg hover:bg-red-700 transition-all transform hover:scale-105 duration-200 focus:outline-none focus:ring-4 focus:ring-red-300">
+                Prosseguir <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+        </main>
+    </div>
+    
+    <script>
+        document.getElementById("prosseguir").onclick = function() {
+           
+            window.location.href = "pesquisasatis.html"; 
+        };
+    </script>
+</body>
+</html>

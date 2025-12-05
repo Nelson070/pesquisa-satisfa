@@ -124,4 +124,3 @@ const HOST = process.env.HOST || '192.168.1.210';
 app.listen(PORT, HOST, () => {
   console.log(`Servidor rodando e acessível em http://${HOST}:${PORT}`);
 });
-
